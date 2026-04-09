@@ -1,15 +1,53 @@
+import sys
+print("Python version:", sys.version, flush=True)
+print("Starting up...", flush=True)
+
 import os
-import numpy as np
-import pandas as pd
-import joblib
-import shap
-from fastapi import FastAPI
-from fastapi.middleware.cors import CORSMiddleware
-from pydantic import BaseModel
-from anthropic import Anthropic
-from dotenv import load_dotenv
+import traceback
+
+try:
+    import numpy as np
+    print("numpy ok", flush=True)
+    import pandas as pd
+    print("pandas ok", flush=True)
+    import joblib
+    print("joblib ok", flush=True)
+    import shap
+    print("shap ok", flush=True)
+    from xgboost import XGBClassifier
+    print("xgboost ok", flush=True)
+    from fastapi import FastAPI
+    from fastapi.middleware.cors import CORSMiddleware
+    from pydantic import BaseModel
+    from anthropic import Anthropic
+    from dotenv import load_dotenv
+    print("all imports ok", flush=True)
+except Exception as e:
+    print("IMPORT FAILED:", e, flush=True)
+    traceback.print_exc()
+    sys.exit(1)
 
 load_dotenv()
+
+try:
+    model = joblib.load("model/model.pkl")
+    print("model loaded", flush=True)
+    explainer = joblib.load("model/explainer.pkl")
+    print("explainer loaded", flush=True)
+    le = joblib.load("model/label_encoder.pkl")
+    print("label encoder loaded", flush=True)
+except Exception as e:
+    print("MODEL LOAD FAILED:", e, flush=True)
+    traceback.print_exc()
+    sys.exit(1)
+
+try:
+    client = Anthropic(api_key=os.getenv("ANTHROPIC_API_KEY"))
+    print("anthropic client ok", flush=True)
+except Exception as e:
+    print("ANTHROPIC FAILED:", e, flush=True)
+    traceback.print_exc()
+    sys.exit(1)
 
 app = FastAPI()
 app.add_middleware(
@@ -18,12 +56,6 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-model = joblib.load("model/model.pkl")
-explainer = joblib.load("model/explainer.pkl")
-le = joblib.load("model/label_encoder.pkl")
-client = Anthropic(api_key=os.getenv("ANTHROPIC_API_KEY"))
 
 FEATURE_COLS = ["age", "bmi", "diabetes", "asa_score", "surgery_duration_min",
                 "procedure_type_enc", "blood_loss_ml", "antibiotic_prophylaxis",
@@ -137,8 +169,9 @@ Write 2-3 plain English sentences explaining the key drivers of this patient's r
         "top3_shap": shap_items,
         "all_shap": all_shap
     }
-    
+
 if __name__ == "__main__":
     import uvicorn
     port = int(os.environ.get("PORT", 8000))
+    print(f"Starting on port {port}", flush=True)
     uvicorn.run("main:app", host="0.0.0.0", port=port)
