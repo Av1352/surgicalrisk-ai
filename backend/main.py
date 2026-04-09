@@ -136,3 +136,8 @@ Write 2-3 plain English sentences explaining the key drivers of this patient's r
         "top3_shap": shap_items,
         "all_shap": all_shap
     }
+    
+if __name__ == "__main__":
+    import uvicorn
+    port = int(os.environ.get("PORT", 8000))
+    uvicorn.run("main:app", host="0.0.0.0", port=port)
