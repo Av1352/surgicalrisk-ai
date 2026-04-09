@@ -5,6 +5,4 @@ dist/
 __pycache__/
 *.pyc
 .DS_Store
-model/*.pkl
-data/*.csv
 venv/
