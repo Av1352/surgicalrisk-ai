@@ -67,7 +67,6 @@ model.fit(X_train, y_train)
 explainer = shap.TreeExplainer(model)
 
 joblib.dump(model, "../model/model.pkl")
-joblib.dump(explainer, "../model/explainer.pkl")
 joblib.dump(le, "../model/label_encoder.pkl")
 
 print(f"Done. SSI rate: {y.mean():.2%}")
