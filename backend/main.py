@@ -1,4 +1,5 @@
 import sys
+import shap
 print("Python version:", sys.version, flush=True)
 print("Starting up...", flush=True)
 
@@ -32,8 +33,8 @@ load_dotenv()
 try:
     model = joblib.load("model/model.pkl")
     print("model loaded", flush=True)
-    explainer = joblib.load("model/explainer.pkl")
-    print("explainer loaded", flush=True)
+    explainer = shap.TreeExplainer(model)
+    print("explainer created", flush=True)
     le = joblib.load("model/label_encoder.pkl")
     print("label encoder loaded", flush=True)
 except Exception as e:
