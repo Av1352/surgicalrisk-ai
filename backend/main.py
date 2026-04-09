@@ -19,9 +19,10 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-model = joblib.load("../model/model.pkl")
-explainer = joblib.load("../model/explainer.pkl")
-le = joblib.load("../model/label_encoder.pkl")
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+model = joblib.load(os.path.join(BASE_DIR, "model", "model.pkl"))
+explainer = joblib.load(os.path.join(BASE_DIR, "model", "explainer.pkl"))
+le = joblib.load(os.path.join(BASE_DIR, "model", "label_encoder.pkl"))
 client = Anthropic(api_key=os.getenv("ANTHROPIC_API_KEY"))
 
 FEATURE_COLS = ["age", "bmi", "diabetes", "asa_score", "surgery_duration_min",
